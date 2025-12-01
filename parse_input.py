@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import os
 import string # Required for component cleaning
+from bart_explanation import run_moral_explanation
 
 # -------------------------
 # CONFIG
@@ -307,3 +308,4 @@ if __name__ == "__main__":
         for k, v in spans.items():
             print(f"{k}: {v}")
         print(f"\nPredicted moral status: {status}")
+        print(f"\nExplaination: {run_moral_explanation()}")
