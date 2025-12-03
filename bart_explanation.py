@@ -165,6 +165,8 @@ def fine_tune_bart():
 # --- Inference (Example of how to use the trained model) ---
 def generate_justification(text_prompt, model_path=os.path.join(OUTPUT_DIR, 'final')):
     """Loads the trained model and generates a consequence/justification."""
+    
+   
     try:
         tokenizer = BartTokenizer.from_pretrained(model_path)
         model = BartForConditionalGeneration.from_pretrained(model_path)

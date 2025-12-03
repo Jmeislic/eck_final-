@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import os
 import string # Required for component cleaning
-from bart_explanation import run_moral_explanation
+from bart_explanation import generate_justification
 
 # -------------------------
 # CONFIG
@@ -301,11 +301,20 @@ def classify_moral_action(text):
 if __name__ == "__main__":
     while True:
         user_input = input("Input: ")
+        secondInput = user_input
         if user_input.lower() == "exit":
             break
-        spans, status = classify_moral_action(user_input)
+        spans, status = classify_moral_action(secondInput)
         print("\nExtracted components:")
         for k, v in spans.items():
             print(f"{k}: {v}")
         print(f"\nPredicted moral status: {status}")
-        print(f"\nExplaination: {run_moral_explanation()}")
+        print(user_input)
+        if status == "MORAL":
+            text = user_input + " It was ethical because: "
+            output = generate_justification( text,  os.path.join('./bart_ethics_finetuned', 'final'))
+            print(f"\nExplaination: {output}")
+        if status == "IMMORAL":
+            text = user_input + " It was unethical because: "
+            output = generate_justification( text,  os.path.join('./bart_ethics_finetuned', 'final'))
+            print(f"\nExplaination: {output}")

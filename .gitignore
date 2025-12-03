@@ -1,5 +1,6 @@
 bert_moral_classifier/
 bert_moral_components/
+bart_ethics_finetuned/
 *.pt
 *.safetensors
 checkpoint-*/
