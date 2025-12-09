@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Input Example</title>
+</head>
+<body>
+
+    <h1>Enter Something</h1>
+
+    <!-- Form sends input to Flask -->
+    <form method="POST">
+        <input type="text" name="user_input" placeholder="Type something..." required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Display the result returned from Flask -->
+    {% if result %}
+        <h2>Result:</h2>
+        <p>{{ result }}</p>
+    {% endif %}
+
+</body>
+</html>
