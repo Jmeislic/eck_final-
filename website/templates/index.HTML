@@ -1,29 +1,47 @@
+<!-- This stack overflow helped me get the style sheet connected https://stackoverflow.com/questions/13772884/css-problems-with-flask-web-app -->
+<!-- This helped me indent the if statement https://stackoverflow.com/questions/66695876/how-use-a-conditional-statement-in-a-flask-app -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Input Example</title>
-</head>
-<body>
-
-    <h1>Enter Something</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EthicAI</title>
+    <link rel="stylesheet" href="../static/stylesheets/styles.css" />
+  </head>
+  <body>
+    <div class="title">EthicAI</div>
 
     <!-- Form sends input to Flask -->
     <form method="POST">
-        <input type="text" name="user_input" placeholder="Type something..." required>
-        <button type="submit">Submit</button>
+      <input
+        type="text"
+        name="user_input"
+        class="questionBox"
+        placeholder="Please input an ethical Query"
+        required
+      />
+      <!-- <button type="submit">Submit</button> -->
     </form>
 
+    <!-- <div class="answerBox">Hello</div> -->
     <!-- Display the result returned from Flask -->
-    {% if result %}
-        <h2>Result:</h2>
-        <p>{{ result }}</p>
-        <p>Norm: {{ norm }}</p>
-        <p>Situation: {{ sit }}</p>
-        <p>Intention: {{ intent }}</p>
-        <p>Action: {{ action }}</p>
-    {% endif %}
-
-</body>
+    
+    <div class="anBox">
+    
+      {% if result %}
+      <div class="anText2">
+        Result: {{ result }}
+      </div>
+      <div class="anText">
+        <div>Input: {{ user_input}}</div>
+        <div>Norm: {{ norm }}</div>
+        <div>Situation: {{ sit }}</div>
+        <div>Intention: {{ intent }}</div>
+        <div>Action: {{ action }}</div>
+      </div>
+      {%else%}
+        You have yet to ask a question
+      {% endif %}
+    </h3>
+  </body>
 </html>

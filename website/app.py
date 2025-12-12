@@ -6,6 +6,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     result = None
+    user_input = ""
     norm = ""
     sit = ""
     intent = ""
@@ -14,7 +15,7 @@ def index():
         user_input = request.form.get("user_input")
         result, norm, sit, intent, action = predict_moral_status(user_input)  # Call your Python function
 
-    return render_template('index.html', result=result, norm=norm, sit=sit, intent=intent, action=action)
+    return render_template('index.html', result=result, norm=norm, sit=sit, intent=intent, action=action, user_input=user_input)
 
 if __name__ == '__main__':
     app.run(debug=True)
