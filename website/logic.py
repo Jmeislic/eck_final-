@@ -110,43 +110,76 @@ def parse_bart_output(bart_output: str) -> dict:
 
     return spans
 
+
+# --- CLASSIFICATION FUNCTION ---
+def predict_moral_status_short(text):
+    """Classifies a single text input as 0 (IMMORAL) or 1 (MORAL)."""
+    if moral_model is None:
+        return np.nan # Cannot proceed if model is missing
+        
+    # Use the moral classifier's tokenizer and model
+    enc = moral_tokenizer(
+        text, 
+        return_tensors="pt", 
+        truncation=True, 
+        padding='max_length', # Consistent padding for batching (though only single item here)
+        max_length=128
+    ).to(DEVICE)
+    
+    with torch.no_grad():
+        out = moral_model(**enc)
+    
+    # Get the predicted class ID (0 or 1)
+    pred_id = torch.argmax(out.logits, dim=-1).item()
+    print(f"is pred_id {pred_id}")
+    moral_status = ID_TO_LABEL.get(pred_id, "UNKNOWN")
+    return moral_status
+
 # --- MAIN PREDICTION FUNCTION (Uses BART for Extraction) ---
 def predict_moral_status(text):
-    """Performs component extraction (BART) and moral classification (BERT)."""
-    
-    # --- 1. Component Extraction using BART (Seq2Seq) ---
-    print("\n--- 1. Running BART for Component Extraction ---")
-    bart_output_text = generate_decomposition(text)
-    spans = parse_bart_output(bart_output_text)
-    
-    # --- 2. Moral Classification using BERT (Sequence Classification) ---
-    print("\n--- 2. Running BERT for Moral Classification ---")
-    if moral_model is None:
-        moral_status = "UNKNOWN (Classifier Missing)"
-    else:
-        # BERT classifier was trained on the combination of elements
-        combined_text = " ".join([spans.get(k, "") for k in ['norm', 'situation', 'intention', 'action'] if spans.get(k)])
+    if len(text)>30:
+        """Performs component extraction (BART) and moral classification (BERT)."""
         
-        # Fallback if BART failed to extract components
-        if combined_text.strip() == "":
-            combined_text = text 
+        # --- 1. Component Extraction using BART (Seq2Seq) ---
+        print("\n--- 1. Running BART for Component Extraction ---")
+        bart_output_text = generate_decomposition(text)
+        spans = parse_bart_output(bart_output_text)
         
-        enc2 = moral_tokenizer(combined_text, return_tensors="pt", truncation=True, padding=True).to(DEVICE)
-        with torch.no_grad():
-            out2 = moral_model(**enc2)
+        # --- 2. Moral Classification using BERT (Sequence Classification) ---
+        print("\n--- 2. Running BERT for Moral Classification ---")
+        if moral_model is None:
+            moral_status = "UNKNOWN (Classifier Missing)"
+        else:
+            # BERT classifier was trained on the combination of elements
+            combined_text = " ".join([spans.get(k, "") for k in ['norm', 'situation', 'intention', 'action'] if spans.get(k)])
             
-        pred_label = torch.argmax(out2.logits, dim=-1).item()
-        moral_status = ID_TO_LABEL.get(pred_label, "UNKNOWN")
+            # Fallback if BART failed to extract components
+            if combined_text.strip() == "":
+                combined_text = text 
+            
+            enc2 = moral_tokenizer(combined_text, return_tensors="pt", truncation=True, padding=True).to(DEVICE)
+            with torch.no_grad():
+                out2 = moral_model(**enc2)
+                
+            pred_label = torch.argmax(out2.logits, dim=-1).item()
+            moral_status = ID_TO_LABEL.get(pred_label, "UNKNOWN")
 
-    print("\n--- Results ---")
-    for k, v in spans.items():
-        print(f"{k.upper()}: {v}")
-    norm = spans.get("norm", "")
-    sit = spans.get("situation", "")
-    intent = spans.get("intention", "")
-    action = spans.get("action", "")
+        print("\n--- Results ---")
+        for k, v in spans.items():
+            print(f"{k.upper()}: {v}")
+        norm = spans.get("norm", "")
+        sit = spans.get("situation", "")
+        intent = spans.get("intention", "")
+        action = spans.get("action", "")
+        
+        
+    else:
+        moral_status=predict_moral_status_short(text)
+        norm = ""
+        sit =""
+        intent = ""
+        action = ""
     print(f"\nMoral Status (BERT): {moral_status}")
-    
     return moral_status, norm, sit, intent, action
 
 # --- Main Execution Block (for testing) ---
