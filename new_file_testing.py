@@ -5,13 +5,10 @@ from transformers import BertTokenizerFast, BertForSequenceClassification
 from transformers import BartTokenizer, BartForConditionalGeneration 
 import numpy as np
 import re # Import regex for parsing BART output
-from sklearn.metrics import accuracy_score # ⬅️ ADDED: Required for evaluation
-
-# --- FILE PATHS (REQUIRED) ---
-TEST_CSV_PATH = './testingSets/dataSet_1_train.csv' # ⬅️ SET: Placeholder path for your evaluation data
 
 # --- CONFIGURATION (Based on your provided script) ---
 # BERT CLASSIFIER CONFIG
+TEST_CSV_PATH = "testingSets/dataSet_1_test.csv"
 MORAL_MODEL_PATH = "./bert_moral_classifier"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_LEN = 128
@@ -46,7 +43,7 @@ try:
 except Exception as e:
     print(f"FATAL ERROR: Could not load BART decomposition model. Error: {e}")
 
-# --- BART INFERENCE FUNCTION ---
+# --- BART INFERENCE FUNCTION (Copied from your script) ---
 def generate_decomposition(input_sentence: str) -> str:
     """Loads the fine-tuned BART model and generates the decomposed output."""
     if bart_model is None or bart_tokenizer is None:
@@ -74,10 +71,12 @@ def generate_decomposition(input_sentence: str) -> str:
         return output_text
 
     except Exception as e:
-        print(f"Error during BART generation: {e}")
+        #f"Error during BART generation: {e}")
         return "norm: Error situation: Error intention: Error action: Error"
 
-# --- HELPER: Parse BART's structured output into a dictionary ---
+import re
+
+# --- HELPER: Parse BART's structured output into a dictionary (UPDATED) ---
 def parse_bart_output(bart_output: str) -> dict:
     """
     Parses the BART output string (e.g., 'norm: text situation: text...') 
@@ -85,58 +84,101 @@ def parse_bart_output(bart_output: str) -> dict:
     """
     spans = {"norm": "", "situation": "", "intention": "", "action": ""}
     
+    # 1. Normalize the BART output for consistent processing (ensure all keys are lowercased and single-spaced)
     normalized_output = bart_output.lower().strip()
     
-    # Regex to capture content non-greedily until the next tag or end of string
+    # 2. Define the keys we are looking for in the specific order
+    keys = ["norm", "situation", "intention", "action"]
+    
+    # 3. Create a combined regex pattern that looks for the keys and captures the content
+    # This pattern captures all text non-greedily (.*?) after a key: until the next key: or the end of the string.
     pattern = r"(norm|situation|intention|action):\s*(.*?)(?=\s*(?:situation|intention|action):|$)"
     
     matches = re.findall(pattern, normalized_output, re.IGNORECASE)
     
+    # 4. Populate the dictionary with extracted components
     for key, content in matches:
+        # Use the key as the dictionary key (e.g., 'norm', 'situation')
         spans[key.strip()] = content.strip()
         
-    # Fallback check for the last component
+    # Check if a component was missed (e.g., the last one) and try to catch it if possible
+    # This is a fallback check for the last component if the lookahead failed
     if not spans['action'] and 'action:' in normalized_output:
+        # Simple fallback for the last element
         parts = normalized_output.split('action:')
         if len(parts) > 1:
             spans['action'] = parts[-1].strip()
 
     return spans
 
+
+# --- CLASSIFICATION FUNCTION ---
+def predict_moral_status_short(text):
+    """Classifies a single text input as 0 (IMMORAL) or 1 (MORAL)."""
+    if moral_model is None:
+        return np.nan # Cannot proceed if model is missing
+        
+    # Use the moral classifier's tokenizer and model
+    enc = moral_tokenizer(
+        text, 
+        return_tensors="pt", 
+        truncation=True, 
+        padding='max_length', # Consistent padding for batching (though only single item here)
+        max_length=128
+    ).to(DEVICE)
+    
+    with torch.no_grad():
+        out = moral_model(**enc)
+    
+    # Get the predicted class ID (0 or 1)
+    pred_id = torch.argmax(out.logits, dim=-1).item()
+
+    moral_status = ID_TO_LABEL.get(pred_id, "UNKNOWN")
+    return pred_id
+
 # --- MAIN PREDICTION FUNCTION (Uses BART for Extraction) ---
 def predict_moral_status(text):
-    """Performs component extraction (BART) and moral classification (BERT)."""
-    
-    # --- 1. Component Extraction using BART (Seq2Seq) ---
-    # print("\n--- 1. Running BART for Component Extraction ---") # Suppressed for clean evaluation output
-    bart_output_text = generate_decomposition(text)
-    spans = parse_bart_output(bart_output_text)
-    
-    # --- 2. Moral Classification using BERT (Sequence Classification) ---
-    if moral_model is None:
-        # print("\n--- 2. Running BERT for Moral Classification ---") # Suppressed
-        # print("\n--- Results ---") # Suppressed
-        # print("Model Error, cannot classify.") # Suppressed
-        return np.nan # Use NaN to exclude this sample from accuracy calculation
-    else:
-        # BERT classifier was trained on the combination of elements
-        combined_text = " ".join([spans.get(k, "") for k in ['norm', 'situation', 'intention', 'action'] if spans.get(k)])
+    if len(text)>30:
+        """Performs component extraction (BART) and moral classification (BERT)."""
         
-        # Fallback if BART failed to extract components
-        if combined_text.strip() == "":
-            combined_text = text 
-        
-        enc2 = moral_tokenizer(combined_text, return_tensors="pt", truncation=True, padding=True).to(DEVICE)
-        with torch.no_grad():
-            out2 = moral_model(**enc2)
-            
-        pred_label = torch.argmax(out2.logits, dim=-1).item()
-        moral_status = ID_TO_LABEL.get(pred_label, "UNKNOWN")
+        # --- 1. Component Extraction using BART (Seq2Seq) ---
 
-    # --- Print block is now ONLY called in interactive mode (via __main__) ---
-    # To keep the evaluation loop clean, we remove the printing here.
-    
-    # Return the predicted label (0 or 1)
+        bart_output_text = generate_decomposition(text)
+        spans = parse_bart_output(bart_output_text)
+        
+        # --- 2. Moral Classification using BERT (Sequence Classification) ---
+
+        if moral_model is None:
+            moral_status = "UNKNOWN (Classifier Missing)"
+        else:
+            # BERT classifier was trained on the combination of elements
+            combined_text = " ".join([spans.get(k, "") for k in ['norm', 'situation', 'intention', 'action'] if spans.get(k)])
+            
+            # Fallback if BART failed to extract components
+            if combined_text.strip() == "":
+                combined_text = text 
+            
+            enc2 = moral_tokenizer(combined_text, return_tensors="pt", truncation=True, padding=True).to(DEVICE)
+            with torch.no_grad():
+                out2 = moral_model(**enc2)
+                
+            pred_label = torch.argmax(out2.logits, dim=-1).item()
+            moral_status = ID_TO_LABEL.get(pred_label, "UNKNOWN")
+
+
+        norm = spans.get("norm", "")
+        sit = spans.get("situation", "")
+        intent = spans.get("intention", "")
+        action = spans.get("action", "")
+        
+        
+    else:
+        pred_label=predict_moral_status_short(text)
+        norm = ""
+        sit =""
+        intent = ""
+        action = ""
+
     return pred_label
 
 
@@ -180,11 +222,11 @@ def transform_moral_stories_to_classification(df_original: pd.DataFrame) -> pd.D
 
 # --- MAIN EVALUATION LOGIC ---
 if moral_model is not None:
-    print("\n" + "="*50)
-    print("🚀 Starting Model Evaluation & Accuracy Calculation 🚀")
-    print("="*50)
+    #"\n" + "="*50)
+    #"🚀 Starting Model Evaluation & Accuracy Calculation 🚀")
+    #"="*50)
     
-    print(f"Reading test data from {TEST_CSV_PATH}...")
+    #f"Reading test data from {TEST_CSV_PATH}...")
     try:
         # 1. Load the raw data
         df_raw = pd.read_csv(TEST_CSV_PATH)
@@ -198,7 +240,7 @@ if moral_model is not None:
         # --- MAKE PREDICTIONS ---
         # Note: We use .apply(lambda x: ...) for better readability, 
         # but a list comprehension is often faster if needed.
-        print("Making predictions on the test data...")
+        #"Making predictions on the test data...")
         df['predicted_label'] = df['input'].apply(predict_moral_status)
         
         # Remove any rows where prediction failed (e.g., if model load was partially successful)
@@ -210,13 +252,13 @@ if moral_model is not None:
             print("ERROR: No valid predictions were made.")
         else:
             # --- CALCULATE TOTAL ACCURACY ---
-            total_accuracy = accuracy_score(true_labels_clean, predicted_labels_clean)
+            total_accuracy = predicted_labels_clean/true_labels_clean
 
-            print("\n" + "="*50)
-            print("                 🌟 FINAL ACCURACY 🌟")
-            print("="*50)
+            #"\n" + "="*50)
+            #"                 🌟 FINAL ACCURACY 🌟")
+            #"="*50)
             print(f"TOTAL ACCURACY (Evaluated samples):   {total_accuracy:.4f} ({len(true_labels_clean)} samples)")
-            print("="*50 + "\n")
+            #"="*50 + "\n")
 
     except FileNotFoundError:
         print(f"ERROR: The file '{TEST_CSV_PATH}' was not found. Please check the path.")
@@ -228,11 +270,11 @@ if __name__ == '__main__':
     # We redefine predict_moral_status for interactive use to include printing
     def interactive_predict_moral_status(text):
         if moral_model is None:
-            print("Error: Moral classifier not loaded.")
+            #"Error: Moral classifier not loaded.")
             return
 
         # 1. Component Extraction
-        print("\n--- 1. Running BART for Component Extraction ---")
+        #"\n--- 1. Running BART for Component Extraction ---")
         bart_output_text = generate_decomposition(text)
         spans = parse_bart_output(bart_output_text)
         
