@@ -10,11 +10,12 @@ def index():
     sit = ""
     intent = ""
     action = ""
+    text = ""
     if request.method == 'POST':
         user_input = request.form.get("user_input")
-        result, norm, sit, intent, action = predict_moral_status(user_input)  # Call your Python function
+        result, norm, sit, intent, action, text = predict_moral_status(user_input)  # Call your Python function
 
-    return render_template('index.html', result=result, norm=norm, sit=sit, intent=intent, action=action)
+    return render_template('index.html', result=result, norm=norm, sit=sit, intent=intent, action=action, text=text)
 
 if __name__ == '__main__':
     app.run(debug=True)

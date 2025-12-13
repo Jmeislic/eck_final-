@@ -147,7 +147,7 @@ def predict_moral_status(text):
     action = spans.get("action", "")
     print(f"\nMoral Status (BERT): {moral_status}")
     
-    return moral_status, norm, sit, intent, action
+    return moral_status, norm, sit, intent, action, text
 
 # --- Main Execution Block (for testing) ---
 if __name__ == '__main__':
