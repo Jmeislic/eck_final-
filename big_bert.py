@@ -20,27 +20,27 @@ if device.type == "cuda":
 # -------------------------------
 # LOAD CSV
 # -------------------------------
-df = pd.read_csv("moral_stories_csv/data_moral_stories_full.csv")
+df = pd.read_csv("./final_train.csv")
 
 # -------------------------------
 # PREPROCESSING
 # -------------------------------
 # Prepare moral (ethical) actions
-moral_df = df[['moral_action', 'norm', 'situation', 'intention', 'moral_consequence']].copy()
-moral_df.rename(columns={'moral_action': 'action', 'moral_consequence': 'consequence'}, inplace=True)
-moral_df['label'] = 1  # ethical
+# moral_df = df[['action', 'norm', 'situation', 'intention', 'consequence']].copy()
+# moral_df.rename(columns={'moral_action': 'action', 'moral_consequence': 'consequence'}, inplace=True)
+# moral_df['label'] = 1  # ethical
 
-# Prepare immoral (unethical) actions
-immoral_df = df[['immoral_action', 'norm', 'situation', 'intention', 'immoral_consequence']].copy()
-immoral_df.rename(columns={'immoral_action': 'action', 'immoral_consequence': 'consequence'}, inplace=True)
-immoral_df['label'] = 0  # unethical
+# # Prepare immoral (unethical) actions
+# immoral_df = df[['immoral_action', 'norm', 'situation', 'intention', 'immoral_consequence']].copy()
+# immoral_df.rename(columns={'immoral_action': 'action', 'immoral_consequence': 'consequence'}, inplace=True)
+# immoral_df['label'] = 0  # unethical
 
-# Combine and drop missing actions
-combined_df = pd.concat([moral_df, immoral_df], ignore_index=True)
-combined_df.dropna(subset=['action'], inplace=True)
+# # Combine and drop missing actions
+# combined_df = pd.concat([moral_df, immoral_df], ignore_index=True)
+# combined_df.dropna(subset=['action'], inplace=True)
 
-# Combine all reasoning/context columns into one text input
-combined_df['text'] = combined_df[['norm', 'situation', 'intention', 'action', 'consequence']].agg(' '.join, axis=1)
+# # Combine all reasoning/context columns into one text input
+df['text'] = df[['norm', 'situation', 'intention', 'action']].agg(' '.join, axis=1)
 
 # -------------------------------
 # TOKENIZER
@@ -49,14 +49,14 @@ tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 max_length = 128  # adjust if your reasoning text is long
 
 encodings = tokenizer(
-    combined_df['text'].tolist(),
+    df['text'].tolist(),
     padding="max_length",
     truncation=True,
     max_length=max_length,
     return_tensors="pt"
 )
 
-labels = torch.tensor(combined_df['label'].values)
+labels = torch.tensor(df['label'].values)
 
 dataset = TensorDataset(encodings['input_ids'], encodings['attention_mask'], labels)
 
@@ -191,7 +191,7 @@ print(f"Total training time: {format_time(time.time() - total_t0)}")
 # -------------------------------
 # SAVE MODEL
 # -------------------------------
-output_dir = "./bert_moral_classifier/"
+output_dir = "./bert_moral_classifier_split_no_consiquence/"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 

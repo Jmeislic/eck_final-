@@ -5,4 +5,7 @@ bertParsed2/
 *.pt
 *.safetensors
 checkpoint-*/
+bert_moral_classifier_split/
+bert_moral_classifier_split_no_consiquence/
+moral_bert_model_short_sentences/
 
