@@ -225,7 +225,7 @@ def plot_accuracies(main_test, total_second, short_second, long_second):
     plt.tight_layout()
     plt.show()
 
-
+plot_accuracies(77.79, 55.60, 61.88, 48.14)
 # print(predict_moral_status("I stole a car from a baby because I am evil")[0])
 
 # To create this code below I asked ChatGPT "Can you create me a Python file that uses the function predict_moral_status(), which takes in as input a string, runs the function on each line of the CSV dataset_1_test.csv, this CSV has 3 columns, which are important: label, input, and is_short. Run the input through the predict function, if the output matches the label output it is a sucess, if it does not it is a failure. Please keep track of short sentences (when is_short is True), and long sentences (when is_short is False) and a total accuracy which is both. Please then print these outputs"
