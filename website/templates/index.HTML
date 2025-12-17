@@ -9,39 +9,54 @@
     <link rel="stylesheet" href="../static/stylesheets/styles.css" />
   </head>
   <body>
-    <div class="title">EthicAI</div>
+    <!-- <div class="container"> -->
+    <div class="leftSide">
+      <div class="title">EthicAI</div>
 
-    <!-- Form sends input to Flask -->
-    <form method="POST">
-      <input
-        type="text"
-        name="user_input"
-        class="questionBox"
-        placeholder="Please input an ethical Query"
-        required
-      />
-      <!-- <button type="submit">Submit</button> -->
-    </form>
+      <!-- Form sends input to Flask -->
+      <form method="POST">
+        <input
+          type="text"
+          name="user_input"
+          class="questionBox"
+          placeholder="Please input an ethical Query"
+          required
+        />
+        <!-- <button type="submit">Submit</button> -->
+      </form>
 
-    <!-- <div class="answerBox">Hello</div> -->
-    <!-- Display the result returned from Flask -->
-    
-    <div class="anBox">
-    
-      {% if result %}
-      <div class="anText2">
-        Result: {{ result }}
+      <!-- <div class="answerBox">Hello</div> -->
+      <!-- Display the result returned from Flask -->
+
+      <div class="anBox">
+        {% if result %}
+        <div class="anText2">Result: {{ result }}</div>
+        <div class="anText">
+          <div>Input: {{ user_input}}</div>
+          <div>Norm: {{ norm }}</div>
+          <div>Situation: {{ sit }}</div>
+          <div>Intention: {{ intent }}</div>
+          <div>Action: {{ action }}</div>
+        </div>
+        {%else%} You have yet to ask a question {% endif %}
       </div>
-      <div class="anText">
-        <div>Input: {{ user_input}}</div>
-        <div>Norm: {{ norm }}</div>
-        <div>Situation: {{ sit }}</div>
-        <div>Intention: {{ intent }}</div>
-        <div>Action: {{ action }}</div>
-      </div>
-      {%else%}
-        You have yet to ask a question
-      {% endif %}
-    </h3>
+    </div>
+    <div class="rightSide">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, sint
+      consectetur necessitatibus minima placeat, perspiciatis esse tempora vel
+      deleniti, similique accusamus corrupti culpa laboriosam magni fuga ea non
+      ullam provident. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      Vel laboriosam assumenda, porro vero quidem iure ratione ipsa similique
+      quas blanditiis! Nesciunt tempora maxime cumque voluptatibus repellendus
+      unde assumenda perspiciatis pariatur? Lorem ipsum dolor sit amet
+      consectetur adipisicing elit. Doloremque exercitationem ab dolor nisi
+      perspiciatis soluta pariatur quam quod amet minima. Consequuntur laborum
+      eaque similique soluta sequi omnis, numquam maiores doloremque! Lorem
+      ipsum dolor sit amet consectetur adipisicing elit. Quia reprehenderit
+      asperiores voluptatum corporis aliquam laboriosam vero illum possimus,
+      aperiam quaerat eligendi eaque culpa dolores officia ducimus, maiores
+      dicta aspernatur similique.
+    </div>
+    <!-- </div> -->
   </body>
 </html>

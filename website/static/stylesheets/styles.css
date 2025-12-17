@@ -1,4 +1,5 @@
 /* This website helped with making gradients https://cssgradient.io/blog/css-gradient-text/ */
+/* This website helped with flex box stuff https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/flex-direction */
 
 body {
   /* background-color: green; */
@@ -8,6 +9,8 @@ body {
     rgba(0, 0, 0, 1) 40%,
     rgb(255, 255, 255) 100%
   );
+  display: flex;
+  flex-direction: row;
 }
 
 .answerBox {
@@ -16,6 +19,23 @@ body {
   height: 10em;
 }
 
+.leftSide {
+  display: flex;
+  height: 100%;
+  width: 55%;
+  flex-direction: column;
+}
+
+.rightSide {
+  margin-top: 10%;
+  display: flex;
+  height: 100%;
+  width: 45%;
+  color: rgb(0, 0, 0);
+  padding-right: 5em;
+  padding-left: 5em;
+  font-size: large;
+}
 .anText {
   color: wheat;
   margin-left: 1em;
@@ -34,7 +54,7 @@ body {
   align-self: center;
   font-size: 15em;
   /* margin-left: 50; */
-  padding-left: 0.5em;
+  /* padding-left: 0.5em; */
 }
 
 .questionBox {

@@ -196,36 +196,62 @@ def makeConfidenceInterval (n, accuracy):
 
 
 
-# To make this function I asked ChatGPT "Can you make me a python function which takes in four accuracys for, "Main Test", "Total Second", "Short Second", "Long Second", and creates a graph of those four values."
+# To make this function I asked ChatGPT "Can you make me a python function which takes in four accuracys for, "Main Test", "Total Second", "Short Second", "Long Second", and creates a graph of those four values. The input for each is a tuple with (accuracy, low confidence interval, high confidence interval)."
 
-def plot_accuracies(main_test, total_second, short_second, long_second):
+
+def plot_accuracies(
+    Edited_Demlin_Dataset,
+    Hendryks_Dataset,
+    Hendryks_Dataset_Short,
+    Hendryks_Dataset_Long
+):
+    """
+    Plots accuracy values with confidence intervals.
+
+    Each input should be a tuple:
+        (accuracy, low_confidence_interval, high_confidence_interval)
+    """
+
     labels = [
-        "Main Test",
-        "Total Second",
-        "Short Second",
-        "Long Second"
+        "Edited Demlin Dataset",
+        "Hendryks Dataset",
+        "Hendryks Dataset Short",
+        "Hendryks Dataset Long"
     ]
-    
-    accuracies = [
-        main_test,
-        total_second,
-        short_second,
-        long_second
+
+    data = [
+        Edited_Demlin_Dataset,
+        Hendryks_Dataset,
+        Hendryks_Dataset_Short,
+        Hendryks_Dataset_Long
     ]
-    
-    plt.figure(figsize=(8, 5))
-    plt.bar(labels, accuracies)
-    plt.ylim(0, 100)
-    plt.ylabel("Accuracy (%)")
-    plt.title("Accuracy Comparison")
-    
-    for i, value in enumerate(accuracies):
-        plt.text(i, value + 1, f"{value}%", ha="center")
-    
-    plt.tight_layout()
+
+    accuracies = [d[0] for d in data]
+
+    # Convert CI bounds into error bar distances
+    lower_errors = [d[0] - d[1] for d in data]
+    upper_errors = [d[2] - d[0] for d in data]
+    yerr = [lower_errors, upper_errors]
+
+    x = range(len(labels))
+
+    plt.figure()
+    plt.errorbar(
+        x,
+        accuracies,
+        yerr=yerr,
+        fmt='o',
+        capsize=5
+    )
+
+    plt.xticks(x, labels)
+    plt.ylabel("Accuracy")
+    plt.ylim(0, 1)
+    plt.title("Model Accuracy with Confidence Intervals")
+
     plt.show()
 
-plot_accuracies(77.79, 55.60, 61.88, 48.14)
+plot_accuracies((77.79, 76.44, 79.13), (55.60, 54.04, 57.16), (61.88, 59.80, 63.95), (48.14, 45.82, 50.05))
 # print(predict_moral_status("I stole a car from a baby because I am evil")[0])
 
 # To create this code below I asked ChatGPT "Can you create me a Python file that uses the function predict_moral_status(), which takes in as input a string, runs the function on each line of the CSV dataset_1_test.csv, this CSV has 3 columns, which are important: label, input, and is_short. Run the input through the predict function, if the output matches the label output it is a sucess, if it does not it is a failure. Please keep track of short sentences (when is_short is True), and long sentences (when is_short is False) and a total accuracy which is both. Please then print these outputs"

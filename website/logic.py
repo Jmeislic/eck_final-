@@ -8,7 +8,7 @@ import re # Import regex for parsing BART output
 
 # --- CONFIGURATION (Based on your provided script) ---
 # BERT CLASSIFIER CONFIG
-MORAL_MODEL_PATH = "./bert_moral_classifier"
+MORAL_MODEL_PATH = "./bert_moral_classifier_split_no_consiquence"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_LEN = 128
 
@@ -137,7 +137,7 @@ def predict_moral_status_short(text):
 
 # --- MAIN PREDICTION FUNCTION (Uses BART for Extraction) ---
 def predict_moral_status(text):
-    if len(text)>30:
+    if len(text)>100:
         """Performs component extraction (BART) and moral classification (BERT)."""
         
         # --- 1. Component Extraction using BART (Seq2Seq) ---
