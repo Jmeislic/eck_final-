@@ -8,6 +8,9 @@ INPUT_CSV = ".\moral_stories_csv\data_classification_action+context+consequence_
 OUTPUT_CSV = "data_With_Sentence.csv"
 
 # Load BART model
+
+
+#Running this file helped us make our custom dataset, it went through the Demlin dataset, using a BART to create an explanation for each row
 model_name = "facebook/bart-large-cnn"
 tokenizer = BartTokenizer.from_pretrained(model_name)
 model = BartForConditionalGeneration.from_pretrained(model_name)

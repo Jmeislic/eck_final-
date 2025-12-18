@@ -1,5 +1,6 @@
 #This top section was copied from logic.py
-
+# This file runs through both the test set from Demnlin and Hendryck, it calculates the accuracy for both (and splits the second into short and long sentneces)
+# It then calculates confidence intervals and graphs for that data
 import pandas as pd
 import torch
 from transformers import BertTokenizerFast, BertForSequenceClassification

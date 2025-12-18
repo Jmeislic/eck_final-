@@ -1,4 +1,5 @@
 #To make this file I asked ChatGPT : "Can you make a python function which creates a callable BERT model. The BERT should be finetuned on a dataset called "data_With_Sentence.csv". The model should take as an input a sentence and output different moral components. Each row of the dataset contains "ID,norm,situation,intention,moral_action,moral_consequence,label,immoral_action,immoral_consequence,explanation", ID should be ignored, and the training item should be explanation, without outputs of norm, situation,intention, moral_action, moral_consequence, label,immoral_action, immoral_consequence. The csv does not always have data for all of the rows, if that happens still train insert the empty string. The file should have a line that makes the model, as well as a function that lets the model be called from other files."
+#This file made a BERT classifier to generate moral classifcations, it was not used in our final implementation.
 import pandas as pd
 import torch
 import torch.nn as nn

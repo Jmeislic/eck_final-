@@ -1,4 +1,6 @@
-#this is a slightly changed copy of createSplitBert.py
+#this is a slightly changed copy of createSplitBert.py, that creates are final BART model. It prepares and finetunes a model based off of the dataset
+
+
 # To generate this code I asked Google Gemini: Can you create for me a python program which trains a custom instance of the AI model BART, which from splits an inputted sentence into "norm", "situation", "intention", "moral_action" or "immoral_action" (depending on the label, 0 for unethical and 1 for ethical). The training dataset is called cleaned_data.csv and the training input is the collum explanation, and the training output is "norm", "situation", "intention", "moral_action" or "immoral_action" (depending on the label, 0 for unethical and 1 for ethical). Please create a file which creates this finetuned model, and has a function which allows it to be called. As well in training this model only include moral action in the output if label is 0, and only include immoral action in the output if the label is 1.
 #Then I aksed the follow up question: With this function it seems that it will add in columns I would not want like ID, which are in the csv file
 # I then asked it "could you make the code above threaded so it goes faster?", and "could you make the code above threaded so it goes faster?" to help with using pytorch to make things go faster
@@ -191,7 +193,7 @@ if __name__ == '__main__':
     train_decomposition_model() 
 
     # After training, you can call the inference function:
-    # test_sentence = "Oliver North, a retired Marine Lieutenant Colonel, became famous for his central role in the 1980s Iran-Contra affair, a scandal where he helped facilitate secret arms sales to Iran (despite a U.S. ban) and funneled the profits to fund the Contra rebels in Nicaragua, which Congress had prohibited. He admitted to lying to Congress and shredding documents but gained public notoriety during his televised testimony, though his subsequent convictions were overturned due to his immunized testimony. "
+    # test_sentence = "I stole a cookie"
     # while True:
     #     test_sentence = input("Ask Jesses model")
     #     decomposition = generate_decomposition(test_sentence)

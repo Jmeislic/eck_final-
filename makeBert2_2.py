@@ -1,6 +1,6 @@
 # To generate this code I asked chatGPT: "Can you create me a python file which fine tunes a bert machine learning model. The model should output either 0 or 1, which corresponds with a moral decision of moral or immoral. The model should be fine tuned with two csv files, the first is "./testingSets/dataSet_1_train.csv" and the second is "./data_With_Sentence copy 2.csv". For the first csv include any row in which "is_short" is True, then the input should be what is the "input" collum and that is matched with the label. For the second csv the input should be the "explanation" collumn which is matched with the boolean opposite of the "label" collumn. This new model should be able to be called from a function, which returns either the words "MORAL" if the ouput is 0 or "IMMORAL" if the output is 1. "
 # I then asked "What are the diffrent bert models I could pretrain ontop of, and what are their bennifits?" to make sure it chose a good base model
-
+# This created an older version of our BERT model, it was not used in the final implementation
 import pandas as pd
 import torch
 from torch.utils.data import Dataset

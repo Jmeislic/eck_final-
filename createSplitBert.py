@@ -2,6 +2,7 @@
 #Then I aksed the follow up question: With this function it seems that it will add in columns I would not want like ID, which are in the csv file
 # I then asked it "could you make the code above threaded so it goes faster?", and "could you make the code above threaded so it goes faster?" to help with using pytorch to make things go faster
 
+#This made a  past version of our BART model, was not used in the final implmentation 
 import pandas as pd
 from transformers import BartTokenizer, BartForConditionalGeneration
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, DataCollatorForSeq2Seq
