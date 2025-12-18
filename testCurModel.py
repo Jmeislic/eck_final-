@@ -18,7 +18,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_LEN = 128
 
 # BART DECOMPOSITION CONFIG
-BART_MODEL_PATH = "./bertParsed2"
+BART_MODEL_PATH = "./bart_split"
 MAX_INPUT_LENGTH = 512
 MAX_TARGET_LENGTH = 128
 ID_TO_LABEL = {0: 'IMMORAL', 1: 'MORAL'} 
@@ -251,7 +251,7 @@ def plot_accuracies(
 
     plt.show()
 
-plot_accuracies((77.79, 76.44, 79.13), (55.60, 54.04, 57.16), (61.88, 59.80, 63.95), (48.14, 45.82, 50.05))
+# plot_accuracies((77.79, 76.44, 79.13), (55.60, 54.04, 57.16), (61.88, 59.80, 63.95), (48.14, 45.82, 50.05))
 # print(predict_moral_status("I stole a car from a baby because I am evil")[0])
 
 # To create this code below I asked ChatGPT "Can you create me a Python file that uses the function predict_moral_status(), which takes in as input a string, runs the function on each line of the CSV dataset_1_test.csv, this CSV has 3 columns, which are important: label, input, and is_short. Run the input through the predict function, if the output matches the label output it is a sucess, if it does not it is a failure. Please keep track of short sentences (when is_short is True), and long sentences (when is_short is False) and a total accuracy which is both. Please then print these outputs"
@@ -264,45 +264,89 @@ short_correct = 0
 long_total = 0
 long_correct = 0
 n1 = 0
-with open("./final_test.csv", newline='', encoding='utf-8') as csvfile:
-    reader = csv.DictReader(csvfile)
 
-    for row in reader:
-        n1 += 1
-        if total%100 == 0:
-            print(f"At row: {total}")
-        label = row["label"]
-        text_input = row["explanation"]
-        # is_short = row["is_short"].lower() == "true"
+was_correct_1 = 0
+was_incorrect_1 = 0
+guessed_moral_1 = 0
+guessed_immoral_1 = 0
+was_moral_guessed_immoral_1 = 0
+was_immoral_guessed_moral_1 = 0
+# with open("./final_test.csv", newline='', encoding='utf-8') as csvfile:
+#     reader = csv.DictReader(csvfile)
 
-        prediction = predict_moral_status(text_input)[0]
+#     for row in reader:
+#         n1 += 1
+#         if total%100 == 0:
+#             print(f"At row: {total}")
+#         label = row["label"]
+#         text_input = row["explanation"]
+#         # is_short = row["is_short"].lower() == "true"
 
-        # print(prediction)
-        # print(label)
+#         prediction = predict_moral_status(text_input)[0]
 
-        total += 1
-        # if is_short:
-        #     short_total += 1
-        # else:
-        #     long_total += 1
-        if label == "1":
-            if prediction == "MORAL":
-                # print("Was correct")
-                total_correct += 1
-                # if is_short:
-                #     short_correct += 1
-                # else:
-                #     long_correct += 1
-        if label == "0":
-            if prediction == "IMMORAL":
-                # print("was correct immoral")
-                total_correct += 1
-                # if is_short:
-                #     short_correct += 1
-                # else:
-                #     long_correct += 1
-                
+#         # print(prediction)
+#         # print(label)
 
+#         total += 1
+#         # if is_short:
+#         #     short_total += 1
+#         # else:
+#         #     long_total += 1
+#         if label == "1":
+#             was_correct_1 += 1
+#             if prediction == "MORAL":
+#                 guessed_moral_1 += 1
+#                 # print("Was correct")
+#                 total_correct += 1
+#                 # if is_short:
+#                 #     short_correct += 1
+#                 # else:
+#                 #     long_correct += 1
+#             else:
+#                 was_moral_guessed_immoral_1 += 1
+#         if label == "0":
+#             was_incorrect_1 += 1
+#             if prediction == "IMMORAL":
+#                 guessed_immoral_1 += 1
+#                 # print("was correct immoral")
+#                 total_correct += 1
+#                 # if is_short:
+#                 #     short_correct += 1
+#                 # else:
+#                 #     long_correct += 1
+#             else:
+#                 was_immoral_guessed_moral_1 += 1
+            
+# print("Starting guess printing")
+# print(was_correct_1 )
+# print(was_incorrect_1 )
+# print(guessed_moral_1 )
+# print(guessed_immoral_1 )
+# print(was_moral_guessed_immoral_1)
+# print(was_immoral_guessed_moral_1)
+# print("end")
+
+
+was_correct_2 = 0
+was_incorrect_2 = 0
+guessed_moral_2 = 0
+guessed_immoral_2 = 0
+was_moral_guessed_immoral_2 = 0
+was_immoral_guessed_moral_2 = 0
+
+was_correct_short = 0
+was_incorrect_short = 0
+guessed_moral_short = 0
+guessed_immoral_short = 0
+was_moral_guessed_immoral_short = 0
+was_immoral_guessed_moral_short = 0
+
+was_correct_long = 0
+was_incorrect_long = 0
+guessed_moral_long = 0
+guessed_immoral_long = 0
+was_moral_guessed_immoral_long = 0
+was_immoral_guessed_moral_long = 0
 total2 = 0
 total_correct2 = 0
 n2 = 0
@@ -311,8 +355,8 @@ with open("./testingSets/dataSet_1_test.csv", newline='', encoding='utf-8') as c
 
     for row in reader:
         n2 += 1
-        if total%100 == 0:
-            print(f"At row: {total} of dataset 2")
+        if total2%100 == 0:
+            print(f"At row: {total2} of dataset 2")
         label = row["label"]
         text_input = row["input"]
         is_short = row["is_short"].lower() == "true"
@@ -327,44 +371,105 @@ with open("./testingSets/dataSet_1_test.csv", newline='', encoding='utf-8') as c
         else:
             long_total += 1
         if label == "0":
+            was_correct_2 += 1
+            if is_short:
+                was_correct_short += 1
+            else:
+                was_correct_long += 1
             if prediction == "MORAL":
                 # print("Was correct")
                 total_correct2 += 1
+                guessed_moral_2 += 1
                 if is_short:
+                    guessed_moral_short += 1
                     short_correct += 1
                 else:
                     long_correct += 1
+                    guessed_moral_long += 1
+            else:
+                was_moral_guessed_immoral_2 += 1
+                if is_short:
+                    was_moral_guessed_immoral_short += 1
+                else:
+                    was_moral_guessed_immoral_long += 1
+
         if label == "1":
+            was_incorrect_2 += 1
+            if is_short:
+                was_incorrect_short += 1
+            else:
+                was_incorrect_long += 1
             if prediction == "IMMORAL":
                 # print("was correct immoral")
                 total_correct2 += 1
+                guessed_immoral_2 += 1
                 if is_short:
+                    guessed_immoral_short += 1
                     short_correct += 1
                 else:
                     long_correct += 1
+                    guessed_immoral_long += 1
+            else:
+                was_immoral_guessed_moral_2 +=1
+                if is_short:
+                    was_immoral_guessed_moral_short += 1
+                else:
+                    was_immoral_guessed_moral_long += 1
+print("Starting guess 2")
+print(was_correct_2 )
+print(was_incorrect_2 )
+print(guessed_moral_2 )
+print(guessed_immoral_2 )
+print(was_moral_guessed_immoral_2)
+print(was_immoral_guessed_moral_2)
+print("end")
+
+print("Starting guess short")
+print(was_correct_short )
+print(was_incorrect_short )
+print(guessed_moral_short )
+print(guessed_immoral_short )
+print(was_moral_guessed_immoral_short)
+print(was_immoral_guessed_moral_short)
+print("end")
+
+print("Starting guess long")
+print(was_correct_long )
+print(was_incorrect_long )
+print(guessed_moral_long )
+print(guessed_immoral_long )
+print(was_moral_guessed_immoral_long)
+print(was_immoral_guessed_moral_long)
+print("end")
 
 # Avoid division by zero
-total_accuracy = total_correct / total if total > 0 else 0.0
+# total_accuracy = total_correct / total if total > 0 else 0.0
 total_accuracy2 = total_correct2 / total2 if total2 > 0 else 0.0
 short_accuracy = short_correct / short_total if short_total > 0 else 0.0
 long_accuracy = long_correct / long_total if long_total > 0 else 0.0
 
-print("Evaluation Results Main Test")
-print("-" * 30)
-print(f"Total samples: {total}")
-print(f"Total accuracy: {total_accuracy:.4f}")
-print(f"The confidence interval is {makeConfidenceInterval(n1, total_accuracy)}")
-print()
+# print("Evaluation Results Main Test")
+# print("-" * 30)
+# print(f"Total samples: {total}")
+# print(f"Total accuracy: {total_accuracy:.4f}")
+# conf1 = makeConfidenceInterval(n1, total_accuracy)
+# print(f"The confidence interval is {conf1}")
+# print()
 print("This is for the second test set:")
 print(f"Total samples: {total2}")
 print(f"Total accuracy: {total_accuracy2:.4f}")
-print(f"The confidence interval is {makeConfidenceInterval(n2, total_accuracy2)}")
+conf2 = makeConfidenceInterval(n2, total_accuracy2)
+print(f"The confidence interval is {conf2}")
 print()
 print(f"Short sentences: {short_total}")
 print(f"Short sentence accuracy: {short_accuracy:.4f}")
-print(f"The confidence interval is {makeConfidenceInterval(short_total, short_accuracy)}")
+conf3 = makeConfidenceInterval(short_total, short_accuracy)
+print(f"The confidence interval is {conf3}")
 print()
 print(f"Long sentences: {long_total}")
 print(f"Long sentence accuracy: {long_accuracy:.4f}")
-print(f"The confidence interval is {makeConfidenceInterval(long_total, long_accuracy)}")
-plot_accuracies(total_accuracy, total_accuracy2, short_accuracy, long_accuracy)
+conf4 = makeConfidenceInterval(long_total, long_accuracy)
+print(f"The confidence interval is {conf4}")
+# plot_accuracies(total_accuracy, total_accuracy2, short_accuracy, long_accuracy)
+
+plot_accuracies( (0.7697*100, 0.7607*100, 0.7833*100), (total_accuracy2*100, conf2[0]*100, conf2[1]*100 ), (short_accuracy*100, conf3[0]*100, conf3[1]*100 ), (long_accuracy*100, conf4[0]*100, conf4[1]*100 ))

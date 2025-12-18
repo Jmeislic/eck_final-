@@ -10,8 +10,8 @@ from datasets import Dataset
 import torch
 # --- Configuration and Placeholders ---
 MODEL_NAME = "facebook/bart-base"
-MODEL_OUTPUT_DIR = "./bertParsed2"
-TRAINING_DATASET = "extra_cleaned_data.csv"
+MODEL_OUTPUT_DIR = "./bart_split"
+TRAINING_DATASET = "final_train.csv"
 
 # **PLACEHOLDERS:** Replace these with your actual column names in a non-sensitive context.
 INPUT_COLUMN = "explanation"
@@ -188,13 +188,13 @@ def generate_decomposition(input_sentence: str) -> str:
 # --- Main Execution Block ---
 if __name__ == '__main__':
     # To run the program, you would first call the training function:
-    # train_decomposition_model() 
+    train_decomposition_model() 
 
     # After training, you can call the inference function:
     # test_sentence = "Oliver North, a retired Marine Lieutenant Colonel, became famous for his central role in the 1980s Iran-Contra affair, a scandal where he helped facilitate secret arms sales to Iran (despite a U.S. ban) and funneled the profits to fund the Contra rebels in Nicaragua, which Congress had prohibited. He admitted to lying to Congress and shredding documents but gained public notoriety during his televised testimony, though his subsequent convictions were overturned due to his immunized testimony. "
-    while True:
-        test_sentence = input("Ask Jesses model")
-        decomposition = generate_decomposition(test_sentence)
-        print(f"\nInput: {test_sentence}")
-        print(f"Output: {decomposition}")
+    # while True:
+    #     test_sentence = input("Ask Jesses model")
+    #     decomposition = generate_decomposition(test_sentence)
+    #     print(f"\nInput: {test_sentence}")
+    #     print(f"Output: {decomposition}")
     # pass
