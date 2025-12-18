@@ -15,7 +15,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_LEN = 128
 
 # BART DECOMPOSITION CONFIG
-BART_MODEL_PATH = "./bertParsed2"
+BART_MODEL_PATH = "./bart_split"
 MAX_INPUT_LENGTH = 512
 MAX_TARGET_LENGTH = 128
 ID_TO_LABEL = {0: 'IMMORAL', 1: 'MORAL'} 
