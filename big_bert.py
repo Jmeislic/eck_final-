@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset, random_split
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, get_linear_schedule_with_warmup
 from torch.optim import AdamW
+# i created this file with the chatgpt prompt "create a bert classifier in pytorch that classifies moral and immoral actions based on reasoning context" and copied and paised the relavent csv files and bert information
 
 # -------------------------------
 # GPU CHECK
