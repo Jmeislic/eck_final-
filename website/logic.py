@@ -140,7 +140,7 @@ def predict_moral_status_short(text):
 
 # --- MAIN PREDICTION FUNCTION (Uses BART for Extraction) ---
 def predict_moral_status(text):
-    if len(text)>100:
+    if len(text)>65:
         """Performs component extraction (BART) and moral classification (BERT)."""
         
         # --- 1. Component Extraction using BART (Seq2Seq) ---

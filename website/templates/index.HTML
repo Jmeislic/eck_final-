@@ -43,20 +43,22 @@
       </div>
     </div>
     <div class="rightSide">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, sint
-      consectetur necessitatibus minima placeat, perspiciatis esse tempora vel
-      deleniti, similique accusamus corrupti culpa laboriosam magni fuga ea non
-      ullam provident. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-      Vel laboriosam assumenda, porro vero quidem iure ratione ipsa similique
-      quas blanditiis! Nesciunt tempora maxime cumque voluptatibus repellendus
-      unde assumenda perspiciatis pariatur? Lorem ipsum dolor sit amet
-      consectetur adipisicing elit. Doloremque exercitationem ab dolor nisi
-      perspiciatis soluta pariatur quam quod amet minima. Consequuntur laborum
-      eaque similique soluta sequi omnis, numquam maiores doloremque! Lorem
-      ipsum dolor sit amet consectetur adipisicing elit. Quia reprehenderit
-      asperiores voluptatum corporis aliquam laboriosam vero illum possimus,
-      aperiam quaerat eligendi eaque culpa dolores officia ducimus, maiores
-      dicta aspernatur similique.
+      In an effort to improve the moral reasoning of LLM outputs, we have
+      created a new machine learning model, EthicAI. This model takes in a
+      sentence and outputs its moral classification and a breakdown of why that
+      decision was made. The model is composed of two different machine learning
+      algorithms, a BART for text generation and then a BERT for moral
+      classification. The BART is trained with an input of explanation section,
+      and output the action, norm, intention and situation. The BERT is trained
+      on action, norm, intention, and situation, and then outputs the label
+      (which is a binary classification of either moral or immoral). Finally
+      with these two parts combined the model can take in any sentence and
+      parses out the different ethical components, (the action, norm, intention,
+      and situation), and then inputs those into the BERT model for moral
+      classification. For short sentences the BART does not have enough text to
+      compose the full components of the sentence so there will not be an output
+      of the action, norm, intention, and situation for sentences under 65
+      characters.
     </div>
     <!-- </div> -->
   </body>
